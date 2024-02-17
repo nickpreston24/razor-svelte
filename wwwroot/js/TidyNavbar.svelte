@@ -7,7 +7,7 @@
     .navbar {
         height: 60px;
         /*background: #6f42c1;*/
-        border: green 4px solid;
+        border: rgb(128, 60, 0) 4px solid;
     }
 </style>
 

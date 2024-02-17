@@ -834,7 +834,7 @@
     	constructor(options) {
     		super();
     		const style = document.createElement('style');
-    		style.textContent = `.navbar{height:60px;border:green 4px solid}`;
+    		style.textContent = `.navbar{height:60px;border:rgb(128, 60, 0) 4px solid}`;
     		this.shadowRoot.appendChild(style);
 
     		init(

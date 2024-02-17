@@ -7,11 +7,11 @@ rm packages-microsoft-prod.deb
 
 sudo apt-get update
 sudo apt-get install -y dotnet-host
-sudo apt-get install -y dotnet-sdk-8.0
-sudo apt-get install -y dotnet-runtime-8.0
-sudo apt-get install -y aspnetcore-runtime-8.0
+sudo apt-get install -y dotnet-sdk-7.0
+sudo apt-get install -y dotnet-runtime-7.0
+sudo apt-get install -y aspnetcore-runtime-7.0
 
-## these are to be removed after installation
-sudo apt autoremove #aspnetcore-targeting-pack-7.0 dotnet-apphost-pack-7.0 dotnet-targeting-pack-7.0 gir1.2-snapd-1 libllvm13 libllvm13:i386
+# these are to be removed after installation
+sudo apt autoremove aspnetcore-targeting-pack-8.0 dotnet-apphost-pack-8.0 dotnet-targeting-pack-8.0 gir1.2-snapd-1 libllvm13 libllvm13:i386
 dotnet --list-runtimes
 dotnet --list-sdks

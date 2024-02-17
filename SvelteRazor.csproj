@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
     <Target Name="Rollup" BeforeTargets="Build">
-        <Exec Command="yarn build:svelte"/>
+        <Exec Command="yarn build:svelte" />
     </Target>
     <ItemGroup>
-        <Watch Include="wwwroot/js/*.svelte"/>
-        <Watch Include="**\*.config.json"/>
-        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*"/>
+        <Watch Include="wwwroot/js/*.svelte" />
+        <Watch Include="**\*.config.json" />
+        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="CodeMechanic.RazorHAT" Version="1.0.8"/>
+        <PackageReference Include="CodeMechanic.RazorHAT" Version="1.0.8" />
     </ItemGroup>
 </Project>
