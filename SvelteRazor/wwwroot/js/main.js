@@ -5,5 +5,5 @@
 import App from './App.svelte'
 import Clock from './Clock.svelte'
 import Counter from './Counter.svelte'
-import TidyNav from './TidyNavbar.svelte'
+import TidyNavbar from './TidyNavbar.svelte'
 
