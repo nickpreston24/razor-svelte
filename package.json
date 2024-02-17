@@ -2,9 +2,9 @@
   "name": "SvelteRazor",
   "version": "1.0.0",
   "scripts": {
-    "build": "yarn && npm i && dotnet build -v q && npm run build:svelte",
+    "build": "yarn && dotnet build -v q && yarn build:svelte",
     "dev": "dotnet watch run --launch-profile hotreloadprofile --urls http://127.1.1.0:8080",
-    "build:svelte": "rollup -c rollup.config.js"
+    "build:svelte": "rollup -c rollup.config.mjs"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^11.2.0",

@@ -20,7 +20,6 @@
     function is_empty(obj) {
         return Object.keys(obj).length === 0;
     }
-
     function append(target, node) {
         target.appendChild(node);
     }
@@ -28,7 +27,9 @@
         target.insertBefore(node, anchor || null);
     }
     function detach(node) {
-        node.parentNode.removeChild(node);
+        if (node.parentNode) {
+            node.parentNode.removeChild(node);
+        }
     }
     function destroy_each(iterations, detaching) {
         for (let i = 0; i < iterations.length; i += 1) {
@@ -66,8 +67,9 @@
     }
     function set_data(text, data) {
         data = '' + data;
-        if (text.wholeText !== data)
-            text.data = data;
+        if (text.data === data)
+            return;
+        text.data = data;
     }
     function attribute_to_object(attributes) {
         const result = {};
@@ -86,15 +88,24 @@
             throw new Error('Function called outside component initialization');
         return current_component;
     }
+    /**
+     * The `onMount` function schedules a callback to run as soon as the component has been mounted to the DOM.
+     * It must be called during the component's initialisation (but doesn't need to live *inside* the component;
+     * it can be called from an external module).
+     *
+     * `onMount` does not run inside a [server-side component](/docs#run-time-server-side-component-api).
+     *
+     * https://svelte.dev/docs#run-time-svelte-onmount
+     */
     function onMount(fn) {
         get_current_component().$$.on_mount.push(fn);
     }
 
     const dirty_components = [];
     const binding_callbacks = [];
-    const render_callbacks = [];
+    let render_callbacks = [];
     const flush_callbacks = [];
-    const resolved_promise = Promise.resolve();
+    const resolved_promise = /* @__PURE__ */ Promise.resolve();
     let update_scheduled = false;
     function schedule_update() {
         if (!update_scheduled) {
@@ -105,22 +116,54 @@
     function add_render_callback(fn) {
         render_callbacks.push(fn);
     }
-    let flushing = false;
+    // flush() calls callbacks in this order:
+    // 1. All beforeUpdate callbacks, in order: parents before children
+    // 2. All bind:this callbacks, in reverse order: children before parents.
+    // 3. All afterUpdate callbacks, in order: parents before children. EXCEPT
+    //    for afterUpdates called during the initial onMount, which are called in
+    //    reverse order: children before parents.
+    // Since callbacks might update component values, which could trigger another
+    // call to flush(), the following steps guard against this:
+    // 1. During beforeUpdate, any updated components will be added to the
+    //    dirty_components array and will cause a reentrant call to flush(). Because
+    //    the flush index is kept outside the function, the reentrant call will pick
+    //    up where the earlier call left off and go through all dirty components. The
+    //    current_component value is saved and restored so that the reentrant call will
+    //    not interfere with the "parent" flush() call.
+    // 2. bind:this callbacks cannot trigger new flush() calls.
+    // 3. During afterUpdate, any updated components will NOT have their afterUpdate
+    //    callback called a second time; the seen_callbacks set, outside the flush()
+    //    function, guarantees this behavior.
     const seen_callbacks = new Set();
+    let flushidx = 0; // Do *not* move this inside the flush() function
     function flush() {
-        if (flushing)
+        // Do not reenter flush while dirty components are updated, as this can
+        // result in an infinite loop. Instead, let the inner flush handle it.
+        // Reentrancy is ok afterwards for bindings etc.
+        if (flushidx !== 0) {
             return;
-        flushing = true;
+        }
+        const saved_component = current_component;
         do {
             // first, call beforeUpdate functions
             // and update components
-            for (let i = 0; i < dirty_components.length; i += 1) {
-                const component = dirty_components[i];
-                set_current_component(component);
-                update(component.$$);
+            try {
+                while (flushidx < dirty_components.length) {
+                    const component = dirty_components[flushidx];
+                    flushidx++;
+                    set_current_component(component);
+                    update(component.$$);
+                }
+            }
+            catch (e) {
+                // reset dirty state to not end up in a deadlocked state and then rethrow
+                dirty_components.length = 0;
+                flushidx = 0;
+                throw e;
             }
             set_current_component(null);
             dirty_components.length = 0;
+            flushidx = 0;
             while (binding_callbacks.length)
                 binding_callbacks.pop()();
             // then, once components are updated, call
@@ -140,8 +183,8 @@
             flush_callbacks.pop()();
         }
         update_scheduled = false;
-        flushing = false;
         seen_callbacks.clear();
+        set_current_component(saved_component);
     }
     function update($$) {
         if ($$.fragment !== null) {
@@ -153,6 +196,16 @@
             $$.after_update.forEach(add_render_callback);
         }
     }
+    /**
+     * Useful for example to execute remaining `afterUpdate` callbacks before executing `destroy`.
+     */
+    function flush_render_callbacks(fns) {
+        const filtered = [];
+        const targets = [];
+        render_callbacks.forEach((c) => fns.indexOf(c) === -1 ? filtered.push(c) : targets.push(c));
+        targets.forEach((c) => c());
+        render_callbacks = filtered;
+    }
     const outroing = new Set();
     function transition_in(block, local) {
         if (block && block.i) {
@@ -160,27 +213,33 @@
             block.i(local);
         }
     }
-    function mount_component(component, target, anchor) {
-        const { fragment, on_mount, on_destroy, after_update } = component.$$;
+    function mount_component(component, target, anchor, customElement) {
+        const { fragment, after_update } = component.$$;
         fragment && fragment.m(target, anchor);
-        // onMount happens before the initial afterUpdate
-        add_render_callback(() => {
-            const new_on_destroy = on_mount.map(run).filter(is_function);
-            if (on_destroy) {
-                on_destroy.push(...new_on_destroy);
-            }
-            else {
-                // Edge case - component was destroyed immediately,
-                // most likely as a result of a binding initialising
-                run_all(new_on_destroy);
-            }
-            component.$$.on_mount = [];
-        });
+        if (!customElement) {
+            // onMount happens before the initial afterUpdate
+            add_render_callback(() => {
+                const new_on_destroy = component.$$.on_mount.map(run).filter(is_function);
+                // if the component was destroyed immediately
+                // it will update the `$$.on_destroy` reference to `null`.
+                // the destructured on_destroy may still reference to the old array
+                if (component.$$.on_destroy) {
+                    component.$$.on_destroy.push(...new_on_destroy);
+                }
+                else {
+                    // Edge case - component was destroyed immediately,
+                    // most likely as a result of a binding initialising
+                    run_all(new_on_destroy);
+                }
+                component.$$.on_mount = [];
+            });
+        }
         after_update.forEach(add_render_callback);
     }
     function destroy_component(component, detaching) {
         const $$ = component.$$;
         if ($$.fragment !== null) {
+            flush_render_callbacks($$.after_update);
             run_all($$.on_destroy);
             $$.fragment && $$.fragment.d(detaching);
             // TODO null out other refs, including component.$$ (but need to
@@ -197,12 +256,12 @@
         }
         component.$$.dirty[(i / 31) | 0] |= (1 << (i % 31));
     }
-    function init(component, options, instance, create_fragment, not_equal, props, dirty = [-1]) {
+    function init(component, options, instance, create_fragment, not_equal, props, append_styles, dirty = [-1]) {
         const parent_component = current_component;
         set_current_component(component);
         const $$ = component.$$ = {
             fragment: null,
-            ctx: null,
+            ctx: [],
             // state
             props,
             update: noop,
@@ -211,14 +270,17 @@
             // lifecycle
             on_mount: [],
             on_destroy: [],
+            on_disconnect: [],
             before_update: [],
             after_update: [],
-            context: new Map(parent_component ? parent_component.$$.context : []),
+            context: new Map(options.context || (parent_component ? parent_component.$$.context : [])),
             // everything else
             callbacks: blank_object(),
             dirty,
-            skip_bound: false
+            skip_bound: false,
+            root: options.target || parent_component.$$.root
         };
+        append_styles && append_styles($$.root);
         let ready = false;
         $$.ctx = instance
             ? instance(component, options.props || {}, (i, ret, ...rest) => {
@@ -250,7 +312,7 @@
             }
             if (options.intro)
                 transition_in(component.$$.fragment);
-            mount_component(component, options.target, options.anchor);
+            mount_component(component, options.target, options.anchor, options.customElement);
             flush();
         }
         set_current_component(parent_component);
@@ -263,6 +325,8 @@
                 this.attachShadow({ mode: 'open' });
             }
             connectedCallback() {
+                const { on_mount } = this.$$;
+                this.$$.on_disconnect = on_mount.map(run).filter(is_function);
                 // @ts-ignore todo: improve typings
                 for (const key in this.$$.slotted) {
                     // @ts-ignore todo: improve typings
@@ -272,12 +336,18 @@
             attributeChangedCallback(attr, _oldValue, newValue) {
                 this[attr] = newValue;
             }
+            disconnectedCallback() {
+                run_all(this.$$.on_disconnect);
+            }
             $destroy() {
                 destroy_component(this, 1);
                 this.$destroy = noop;
             }
             $on(type, callback) {
                 // TODO should this delegate to addEventListener?
+                if (!is_function(callback)) {
+                    return noop;
+                }
                 const callbacks = (this.$$.callbacks[type] || (this.$$.callbacks[type] = []));
                 callbacks.push(callback);
                 return () => {
@@ -296,9 +366,9 @@
         };
     }
 
-    /* wwwroot/js/App.svelte generated by Svelte v3.32.3 */
+    /* wwwroot/js/App.svelte generated by Svelte v3.59.2 */
 
-    function create_fragment(ctx) {
+    function create_fragment$3(ctx) {
     	let main;
     	let h1;
     	let t0;
@@ -337,13 +407,13 @@
     	};
     }
 
-    function instance($$self, $$props, $$invalidate) {
+    function instance$2($$self, $$props, $$invalidate) {
     	let { name } = $$props;
     	let { id } = $$props;
 
     	$$self.$$set = $$props => {
-    		if ("name" in $$props) $$invalidate(0, name = $$props.name);
-    		if ("id" in $$props) $$invalidate(1, id = $$props.id);
+    		if ('name' in $$props) $$invalidate(0, name = $$props.name);
+    		if ('id' in $$props) $$invalidate(1, id = $$props.id);
     	};
 
     	return [name, id];
@@ -352,18 +422,22 @@
     class App extends SvelteElement {
     	constructor(options) {
     		super();
-    		this.shadowRoot.innerHTML = `<style>h1{font-size:5em}</style>`;
+    		const style = document.createElement('style');
+    		style.textContent = `h1{font-size:5em}`;
+    		this.shadowRoot.appendChild(style);
 
     		init(
     			this,
     			{
     				target: this.shadowRoot,
-    				props: attribute_to_object(this.attributes)
+    				props: attribute_to_object(this.attributes),
+    				customElement: true
     			},
-    			instance,
-    			create_fragment,
+    			instance$2,
+    			create_fragment$3,
     			safe_not_equal,
-    			{ name: 0, id: 1 }
+    			{ name: 0, id: 1 },
+    			null
     		);
 
     		if (options) {
@@ -387,7 +461,7 @@
     	}
 
     	set name(name) {
-    		this.$set({ name });
+    		this.$$set({ name });
     		flush();
     	}
 
@@ -396,14 +470,14 @@
     	}
 
     	set id(id) {
-    		this.$set({ id });
+    		this.$$set({ id });
     		flush();
     	}
     }
 
     customElements.define("svelte-app", App);
 
-    /* wwwroot/js/Clock.svelte generated by Svelte v3.32.3 */
+    /* wwwroot/js/Clock.svelte generated by Svelte v3.59.2 */
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
@@ -432,6 +506,7 @@
     		m(target, anchor) {
     			insert(target, line, anchor);
     		},
+    		p: noop,
     		d(detaching) {
     			if (detaching) detach(line);
     		}
@@ -467,7 +542,9 @@
     			insert(target, line, anchor);
 
     			for (let i = 0; i < 4; i += 1) {
-    				each_blocks[i].m(target, anchor);
+    				if (each_blocks[i]) {
+    					each_blocks[i].m(target, anchor);
+    				}
     			}
 
     			insert(target, each_1_anchor, anchor);
@@ -481,7 +558,7 @@
     	};
     }
 
-    function create_fragment$1(ctx) {
+    function create_fragment$2(ctx) {
     	let svg;
     	let circle;
     	let line0;
@@ -519,18 +596,18 @@
     			attr(line0, "class", "hour");
     			attr(line0, "y1", "2");
     			attr(line0, "y2", "-20");
-    			attr(line0, "transform", line0_transform_value = "rotate(" + (30 * /*hours*/ ctx[0] + /*minutes*/ ctx[1] / 2) + ")");
+    			attr(line0, "transform", line0_transform_value = "rotate(" + (30 * /*hours*/ ctx[2] + /*minutes*/ ctx[1] / 2) + ")");
     			attr(line1, "class", "minute");
     			attr(line1, "y1", "4");
     			attr(line1, "y2", "-30");
-    			attr(line1, "transform", line1_transform_value = "rotate(" + (6 * /*minutes*/ ctx[1] + /*seconds*/ ctx[2] / 10) + ")");
+    			attr(line1, "transform", line1_transform_value = "rotate(" + (6 * /*minutes*/ ctx[1] + /*seconds*/ ctx[0] / 10) + ")");
     			attr(line2, "class", "second");
     			attr(line2, "y1", "10");
     			attr(line2, "y2", "-38");
     			attr(line3, "class", "second-counterweight");
     			attr(line3, "y1", "10");
     			attr(line3, "y2", "2");
-    			attr(g, "transform", g_transform_value = "rotate(" + 6 * /*seconds*/ ctx[2] + ")");
+    			attr(g, "transform", g_transform_value = "rotate(" + 6 * /*seconds*/ ctx[0] + ")");
     			attr(svg, "viewBox", "-50 -50 100 100");
     		},
     		m(target, anchor) {
@@ -538,7 +615,9 @@
     			append(svg, circle);
 
     			for (let i = 0; i < 12; i += 1) {
-    				each_blocks[i].m(svg, null);
+    				if (each_blocks[i]) {
+    					each_blocks[i].m(svg, null);
+    				}
     			}
 
     			append(svg, line0);
@@ -548,15 +627,15 @@
     			append(g, line3);
     		},
     		p(ctx, [dirty]) {
-    			if (dirty & /*hours, minutes*/ 3 && line0_transform_value !== (line0_transform_value = "rotate(" + (30 * /*hours*/ ctx[0] + /*minutes*/ ctx[1] / 2) + ")")) {
+    			if (dirty & /*hours, minutes*/ 6 && line0_transform_value !== (line0_transform_value = "rotate(" + (30 * /*hours*/ ctx[2] + /*minutes*/ ctx[1] / 2) + ")")) {
     				attr(line0, "transform", line0_transform_value);
     			}
 
-    			if (dirty & /*minutes, seconds*/ 6 && line1_transform_value !== (line1_transform_value = "rotate(" + (6 * /*minutes*/ ctx[1] + /*seconds*/ ctx[2] / 10) + ")")) {
+    			if (dirty & /*minutes, seconds*/ 3 && line1_transform_value !== (line1_transform_value = "rotate(" + (6 * /*minutes*/ ctx[1] + /*seconds*/ ctx[0] / 10) + ")")) {
     				attr(line1, "transform", line1_transform_value);
     			}
 
-    			if (dirty & /*seconds*/ 4 && g_transform_value !== (g_transform_value = "rotate(" + 6 * /*seconds*/ ctx[2] + ")")) {
+    			if (dirty & /*seconds*/ 1 && g_transform_value !== (g_transform_value = "rotate(" + 6 * /*seconds*/ ctx[0] + ")")) {
     				attr(g, "transform", g_transform_value);
     			}
     		},
@@ -592,7 +671,7 @@
     		if ($$self.$$.dirty & /*time*/ 8) {
     			// these automatically update when `time`
     			// changes, because of the `$:` prefix
-    			$$invalidate(0, hours = time.getHours());
+    			$$invalidate(2, hours = time.getHours());
     		}
 
     		if ($$self.$$.dirty & /*time*/ 8) {
@@ -600,28 +679,32 @@
     		}
 
     		if ($$self.$$.dirty & /*time*/ 8) {
-    			$$invalidate(2, seconds = time.getSeconds());
+    			$$invalidate(0, seconds = time.getSeconds());
     		}
     	};
 
-    	return [hours, minutes, seconds, time];
+    	return [seconds, minutes, hours, time];
     }
 
     class Clock extends SvelteElement {
     	constructor(options) {
     		super();
-    		this.shadowRoot.innerHTML = `<style>svg{width:100%;height:100%}.clock-face{stroke:#333;fill:white}.minor{stroke:#999;stroke-width:0.5}.major{stroke:#333;stroke-width:1}.hour{stroke:#333}.minute{stroke:#666}.second,.second-counterweight{stroke:rgb(180,0,0)}.second-counterweight{stroke-width:3}</style>`;
+    		const style = document.createElement('style');
+    		style.textContent = `svg{width:100%;height:100%}.clock-face{stroke:#333;fill:white}.minor{stroke:#999;stroke-width:0.5}.major{stroke:#333;stroke-width:1}.hour{stroke:#333}.minute{stroke:#666}.second,.second-counterweight{stroke:rgb(180,0,0)}.second-counterweight{stroke-width:3}`;
+    		this.shadowRoot.appendChild(style);
 
     		init(
     			this,
     			{
     				target: this.shadowRoot,
-    				props: attribute_to_object(this.attributes)
+    				props: attribute_to_object(this.attributes),
+    				customElement: true
     			},
     			instance$1,
-    			create_fragment$1,
+    			create_fragment$2,
     			safe_not_equal,
-    			{}
+    			{},
+    			null
     		);
 
     		if (options) {
@@ -634,14 +717,14 @@
 
     customElements.define("svg-clock", Clock);
 
-    /* wwwroot/js/Counter.svelte generated by Svelte v3.32.3 */
+    /* wwwroot/js/Counter.svelte generated by Svelte v3.59.2 */
 
-    function create_fragment$2(ctx) {
+    function create_fragment$1(ctx) {
     	let button;
     	let t0;
     	let t1;
     	let t2;
-    	let t3_value = (/*count*/ ctx[0] === 1 ? "time" : "times") + "";
+    	let t3_value = (/*count*/ ctx[0] === 1 ? 'time' : 'times') + "";
     	let t3;
     	let mounted;
     	let dispose;
@@ -670,7 +753,7 @@
     		},
     		p(ctx, [dirty]) {
     			if (dirty & /*count*/ 1) set_data(t1, /*count*/ ctx[0]);
-    			if (dirty & /*count*/ 1 && t3_value !== (t3_value = (/*count*/ ctx[0] === 1 ? "time" : "times") + "")) set_data(t3, t3_value);
+    			if (dirty & /*count*/ 1 && t3_value !== (t3_value = (/*count*/ ctx[0] === 1 ? 'time' : 'times') + "")) set_data(t3, t3_value);
     		},
     		i: noop,
     		o: noop,
@@ -682,7 +765,7 @@
     	};
     }
 
-    function instance$2($$self, $$props, $$invalidate) {
+    function instance($$self, $$props, $$invalidate) {
     	let count = 0;
 
     	function handleClick() {
@@ -700,12 +783,14 @@
     			this,
     			{
     				target: this.shadowRoot,
-    				props: attribute_to_object(this.attributes)
+    				props: attribute_to_object(this.attributes),
+    				customElement: true
     			},
-    			instance$2,
-    			create_fragment$2,
+    			instance,
+    			create_fragment$1,
     			safe_not_equal,
-    			{}
+    			{},
+    			null
     		);
 
     		if (options) {
@@ -718,9 +803,9 @@
 
     customElements.define("custom-counter", Counter);
 
-    /* wwwroot/js/TidyNavbar.svelte generated by Svelte v3.32.3 */
+    /* wwwroot/js/TidyNavbar.svelte generated by Svelte v3.59.2 */
 
-    function create_fragment$3(ctx) {
+    function create_fragment(ctx) {
     	let div3;
 
     	return {
@@ -748,18 +833,22 @@
     class TidyNavbar extends SvelteElement {
     	constructor(options) {
     		super();
-    		this.shadowRoot.innerHTML = `<style>.navbar{height:60px;border:green 4px solid}</style>`;
+    		const style = document.createElement('style');
+    		style.textContent = `.navbar{height:60px;border:green 4px solid}`;
+    		this.shadowRoot.appendChild(style);
 
     		init(
     			this,
     			{
     				target: this.shadowRoot,
-    				props: attribute_to_object(this.attributes)
+    				props: attribute_to_object(this.attributes),
+    				customElement: true
     			},
     			null,
-    			create_fragment$3,
+    			create_fragment,
     			safe_not_equal,
-    			{}
+    			{},
+    			null
     		);
 
     		if (options) {
@@ -772,4 +861,4 @@
 
     customElements.define("tidy-navbar", TidyNavbar);
 
-}());
+})();
