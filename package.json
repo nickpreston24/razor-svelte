@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "yarn && dotnet build -v q && yarn build:svelte",
-    "dev": "dotnet watch run --launch-profile hotreloadprofile --urls http://127.1.1.0:8080",
+    "dev": "dotnet watch run --launch-profile hotreloadprofile --urls http://127.1.1.0:8001",
     "build:svelte": "rollup -c rollup.config.mjs"
   },
   "devDependencies": {
