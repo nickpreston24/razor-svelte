@@ -2,6 +2,7 @@
 @model IndexModel
 @{
     ViewData["Title"] = null;
+    var count  = 42;
 }
 
 <div>
@@ -14,7 +15,10 @@
             Content...
             @* <button class="btn btn-primary">Outside</button> *@
 
-            <custom-counter name="Bartholomew">...</custom-counter>
+            <custom-counter 
+                count={3}
+                answer={42}
+            />
 
             <partial name="_FruitLoops" model="new CerealTable()"></partial>
         </span>

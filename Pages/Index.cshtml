@@ -2,8 +2,11 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    var count = 5;
 }
 
 <a href="/Sandbox">
     <button class="btn btn-accent">Go to Sandbox</button>
 </a>
+
+<custom-counter count=@count></custom-counter>
