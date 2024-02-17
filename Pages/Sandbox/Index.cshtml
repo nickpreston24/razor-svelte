@@ -1,0 +1,23 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = null;
+}
+
+<div>
+    <svelte-app name="Nick"></svelte-app>
+
+    <div x-data="{ open: false }">
+        <button x-on:click="open = true">Expand</button>
+
+        <span x-show="open">
+            Content...
+            <button class="btn btn-primary">Outside</button>
+
+            <custom-counter name="Bartholomew">...</custom-counter>
+
+            <partial name="_FruitLoops" model="new CerealTable()"></partial>
+        </span>
+    </div>
+
+</div>

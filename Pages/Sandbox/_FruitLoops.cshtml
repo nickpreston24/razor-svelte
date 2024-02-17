@@ -1,0 +1,23 @@
+@model CerealTable
+@{
+    var rows = Model.Rows;
+}
+<table>
+    <thead>
+    <th>
+        Brand
+    </th>
+    <th>
+        Cost
+    </th>
+    </thead>
+
+    <tbody>
+    @foreach (var row in rows)
+    {
+        <tr>
+            @row.ToHtml()
+        </tr>
+    }
+    </tbody>
+</table>
