@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
     <Target Name="Rollup" BeforeTargets="Build">
-        <Exec Command="npm run build:svelte"/>
+        <Exec Command="yarn build:svelte"/>
     </Target>
     <ItemGroup>
         <Watch Include="wwwroot/js/*.svelte"/>
