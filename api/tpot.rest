@@ -1,0 +1,25 @@
+### All pages
+
+GET https://www.thepathoftruth.com/wp-json/wp/v2/pages?_embed&per_page=100&page=1
+
+### categories lookup
+GET https://www.thepathoftruth.com/wp-json/wp/v2/categories
+
+### specific categories
+GET https://www.thepathoftruth.com/wp-json/wp/v2/pages?_embed&per_page=10&page=1&categories=286,283,491
+
+### Category quick legend:
+# 491 - Chinese
+# 348 - Translations
+# 259 - French
+
+### only french translations
+GET https://www.thepathoftruth.com/wp-json/wp/v2/pages?_embed&per_page=10&page=1&categories=348,259
+
+### Get latest pages
+
+GET https://www.thepathoftruth.com/wp-json/wp/v2/pages
+
+
+
+

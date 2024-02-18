@@ -1,0 +1,44 @@
+@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SvelteRazor.Pages.TPOT.Index
+
+@{
+    // var Upload = Model.Upload;
+}
+
+<div x-data="setup_tpot()">
+    <h1>Hi there</h1>
+    <p>api stuff here</p>
+
+    <template x-for="[key, value] of Object.entries(options)">
+        <div class="mb-3">
+            @* <label class="form-control" x-text="key"></label> *@
+            @* <span x-text="value"></span> *@
+            <div class="label">
+                <span x-text="value?.name" class="label-text">...</span>
+                <span x-text="value?.alt" class="label-text-alt">alt...</span>
+            </div>
+            <input type="checkbox" class="form-control toggle toggle-accent" :for="key">
+        </div>
+    </template>
+
+    @* file upload *@
+
+    <form method="post" enctype="multipart/form-data">
+        <input class="file-input file-input-bordered w-full max-w-xs" type="file" asp-for="Upload"/>
+        <input type="submit"/>
+    </form>
+</div>
+
+<script>
+function setup_tpot () {
+    return {
+        options: [
+            {name: "foo", value: true,},
+            {name: "bar" , value: true,},
+            {name: "baz" , value: false,}
+        ]
+    }
+}
+    
+</script>

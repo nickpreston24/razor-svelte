@@ -5,6 +5,7 @@
 **/*/out/
 out
 wwwroot/lib
+uploads
 # User-specific files
 *.rsuser
 *.suo

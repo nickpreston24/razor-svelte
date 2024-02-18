@@ -1,4 +1,4 @@
-<svelte:options tag="svelte-app" />
+<svelte:options tag="big-header" />
 <script>
     export let name;
     export let id;
