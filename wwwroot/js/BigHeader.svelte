@@ -1,6 +1,6 @@
 <svelte:options tag="big-header"/>
 <script>
-    export let message;
+    export let message = 'Your message here';
     export let id;
 </script>
 

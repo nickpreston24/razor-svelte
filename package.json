@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "yarn && dotnet build -v q && yarn build:svelte",
-    "dev": "dotnet watch run --launch-profile hotreloadprofile --urls http://127.1.1.0:8001",
+    "dev": "dotnet watch run --launch-profile hotreloadprofile --urls http://127.1.1.0:8000",
     "build:svelte": "rollup -c rollup.config.mjs",
     "nuke": "rm -rf node_modules wwwroot/lib wwwroot/css bin obj",
     "buildcss:linux": "npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/site.css"

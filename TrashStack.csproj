@@ -11,7 +11,7 @@
         <Watch Include="**\*.rest"/>
         <Watch Include="**\*.config.json"/>
         <!--        match svelte js files-->
-        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*"/>
+<!--        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*"/>-->
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CodeMechanic.RazorHAT" Version="1.0.8"/>
