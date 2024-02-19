@@ -6,7 +6,7 @@ A low-code, framework-optional stack made of recyled parts.
 * __Razor__ - HTML API with the power of xplatform C# behind it. None of that Blazor SPA complexity or JS neutering.
 * __Htmx__ - htmx.org, HTML attributes that give your entire UI the ability to call APIs. Low-code, low-JS.
 * __Alpine__ - for animations, toggles, and anything that HTMX, svelte or Razor cannot do.
-* __*S*velte (*optional*)__ - custom, reusable ui components (optionally powered by tailwindcss)
+* __Svelte (*optional*)__ - custom, reusable ui components (optionally powered by tailwindcss)
 
 
 ## Installation
