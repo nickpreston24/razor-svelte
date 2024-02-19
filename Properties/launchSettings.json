@@ -24,7 +24,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SvelteRazor": {
+    "Trash Stack": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

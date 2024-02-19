@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using CodeMechanic.RazorHAT;
 using Microsoft.AspNetCore.Html;
 
-namespace SvelteRazor.Pages.Sandbox;
+namespace TrashStack.Pages.Sandbox;
 
 public class CerealTable
 {

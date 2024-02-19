@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SvelteRazor.Pages.TPOT;
+namespace TrashStack.Pages.TPOT;
 
 public class Index : PageModel
 {

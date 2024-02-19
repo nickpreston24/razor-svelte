@@ -1,24 +1,24 @@
-<svelte:options tag="custom-counter" />
+<svelte:options tag="custom-counter"/>
 
 <script>
-  export let count = 1;
-  export let answer = "a mystery";
+    export let count = 0;
+    export let name = 'counter';
 
-  console.log("count :>> ", typeof count);
+    // console.log("count :>> ", typeof count);
 
-  function handleClick() {
-    console.log("count :>> ", typeof count);
-    count += 1;
-  }
+    function handleClick() {
+        // console.log("count :>> ", typeof count);
+        count += 1;
+    }
 </script>
 
 <div>
-  <button class="btn btn-accent" on:click={handleClick}>
-    Clicked {count}
-    {count === 1 ? "time" : "times"}
-  </button>
+    <span>{name}</span>
+    <button class="btn btn-accent" on:click={handleClick}>
+        Clicked {count}
+        {count === 1 ? "time" : "times"}
+    </button>
 
-  <p>The answer is {answer}</p>
 </div>
 
 <!--<main>-->
