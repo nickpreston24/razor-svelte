@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SvelteRazor.Pages.Sandbox;
+namespace Trash Stack.Pages.Sandbox;
 
 public class Index : PageModel
 {

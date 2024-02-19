@@ -1,11 +1,11 @@
-<svelte:options tag="big-header" />
+<svelte:options tag="big-header"/>
 <script>
-    export let name;
+    export let message;
     export let id;
 </script>
 
 <main>
-    <h1 id="{id}">Hello {name}!</h1>
+    <h1 id="{id}">Hello {message}!</h1>
 </main>
 
 <style>

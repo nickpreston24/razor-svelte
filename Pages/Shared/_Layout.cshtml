@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - SvelteRazor</title>
+    <title>@ViewData["Title"] - TRASH Stack</title>
 
     <script src="https://unpkg.com/htmx.org@latest"
             asp-fallback-src="~/lib/htmx.org/dist/htmx.js"
@@ -46,7 +46,7 @@
                         </div>
                         <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                             <li>
-                                <a>Homepage</a>
+                                <a href="/">Home</a>
                             </li>
                             <li>
                                 <a href="/sandbox">Sandbox</a>
@@ -54,11 +54,14 @@
                             <li>
                                 <a href="/tpot">Links</a>
                             </li>
+                            <li>
+                                <a href="/jobs">Jobs</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
                 <div class="navbar-center">
-                    <a class="btn btn-ghost text-xl">Razor Svelte</a>
+                    <a class="btn btn-ghost text-xl">SHATRD Stack Template</a>
                 </div>
                 <div class="navbar-end">
                     <button class="btn btn-ghost btn-circle">
@@ -86,12 +89,6 @@
         @RenderBody()
     </main>
 </div>
-@* *@
-@* <footer class="border-top footer text-muted"> *@
-@*     <div class="container"> *@
-@*         &copy; 2021 - SvelteRazor - <a asp-area="" asp-page="/Privacy">Privacy</a> *@
-@*     </div> *@
-@* </footer> *@
 
 <script src="~/js/build/bundle.js" asp-append-version="true"></script>
 

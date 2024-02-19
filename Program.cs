@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace SvelteRazor
+namespace Trash Stack
 {
     public class Program
     {

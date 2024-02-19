@@ -9,3 +9,12 @@
         display: none;
     }
 }
+
+/* flexies */
+
+.flex-stack {
+    flex: auto;
+    flex-direction: column;
+    justify-items: center;
+    /*align-items: center;*/
+}

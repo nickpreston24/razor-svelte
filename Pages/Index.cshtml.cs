@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace SvelteRazor.Pages
+namespace Trash Stack.Pages
 {
     public class IndexModel : PageModel
     {
