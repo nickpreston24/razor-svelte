@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Trash Stack
+namespace TrashStack
 {
     public class Program
     {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Trash Stack.Pages.Sandbox;
+namespace TrashStack.Pages.Sandbox;
 
 public class Index : PageModel
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace Trash Stack.Pages
+namespace TrashStack.Pages
 {
     public class IndexModel : PageModel
     {

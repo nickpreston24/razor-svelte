@@ -1,5 +1,5 @@
 {
-  "name": "Trash Stack",
+  "name": "TrashStack",
   "version": "1.0.0",
   "scripts": {
     "build": "yarn && dotnet build -v q && yarn build:svelte",

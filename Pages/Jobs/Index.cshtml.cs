@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Trash Stack.Pages.Jobs;
+namespace TrashStack.Pages.Jobs;
 
 public class Index : PageModel
 {
