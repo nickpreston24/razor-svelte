@@ -7,27 +7,70 @@
 }
 
 <div x-data="setup_tpot()">
-    <h1>Hi there</h1>
-    <p>api stuff here</p>
+    <h1>TPOT Wordpress</h1>
 
-    <template x-for="[key, value] of Object.entries(options)">
-        <div class="mb-3">
-            @* <label class="form-control" x-text="key"></label> *@
-            @* <span x-text="value"></span> *@
-            <div class="label">
-                <span x-text="value?.name" class="label-text">...</span>
-                <span x-text="value?.alt" class="label-text-alt">alt...</span>
-            </div>
-            <input type="checkbox" class="form-control toggle toggle-accent" :for="key">
+    <div
+        class="h-screen"
+        hx-target="this">
+        <button
+            class="btn btn-primary"
+            hx-get
+            hx-page="Index"
+            hx-page-handler="SearchWordpress"
+            hx-swap="outerHtml">
+            Search Wordpress - API Parser
+        </button>
+    </div>
+
+
+    <section
+        x-data="{ shown: false }"
+        class="h-screen"
+        x-intersect:enter="shown = true">
+
+        <div x-show="shown"
+             x-transition
+             x-collapse>
+
+            <template
+                x-for="[key, value] of Object.entries(options)">
+                <div class="mb-3">
+                    @* <label class="form-control" x-text="key"></label> *@
+                    @* <span x-text="value"></span> *@
+                    <div class="label">
+                        <span x-text="value?.name" class="label-text">...</span>
+                        <span x-text="value?.alt" class="label-text-alt">alt...</span>
+                    </div>
+                    <input type="checkbox" class="form-control toggle toggle-accent" :for="key">
+                </div>
+            </template>
         </div>
-    </template>
+    </section>
+
+
+    <div x-data="{ shown: false }" x-intersect="shown = true">
+        <div x-show="shown" x-transition>
+            I'm in the viewport!
+        </div>
+    </div>
+
 
     @* file upload *@
 
-    <form method="post" enctype="multipart/form-data">
-        <input class="file-input file-input-bordered w-full max-w-xs" type="file" asp-for="Upload"/>
-        <input type="submit"/>
-    </form>
+    <section
+        class="h-screen"
+        x-data="{ shown: false }" x-intersect="shown = true">
+
+        <div x-show="shown" x-transition>
+
+            <form disabled method="post" enctype="multipart/form-data">
+                <input class="file-input file-input-bordered w-full max-w-xs" type="file" asp-for="Upload"/>
+                <input type="submit"/>
+            </form>
+        </div>
+    </section>
+
+
 </div>
 
 <script>

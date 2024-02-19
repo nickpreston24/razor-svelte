@@ -15,6 +15,8 @@
         <PackageReference Include="CodeMechanic.RazorHAT" Version="1.0.8" />
         <PackageReference Include="CodeMechanic.Types" Version="1.0.7" />
         <PackageReference Include="CodeMechanic.Regex" Version="1.0.2" />
+        <PackageReference Include="Htmx" Version="1.7.0" />
+        <PackageReference Include="Htmx.TagHelpers" Version="1.7.0" />
         <PackageReference Include="System.Runtime.Caching" Version="8.0.0" />
     </ItemGroup>
 </Project>

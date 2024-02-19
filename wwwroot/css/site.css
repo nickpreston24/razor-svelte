@@ -1,0 +1,13 @@
+/* always hidden */
+
+[x-cloak=""] {
+  display: none;
+}
+
+/* hidden on mobile/smaller screens */
+
+@media screen and (max-width: 768px) {
+  [x-cloak="mobile"] {
+    display: none;
+  }
+}

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using CodeMechanic.Curl;
 using CodeMechanic.FileSystem;
@@ -25,10 +26,11 @@ public class Index : PageModel
     {
     }
 
-    public async Task SearchWordpress()
+    public async Task<IActionResult> OnGetSearchWordpress()
     {
+        Console.WriteLine(nameof(OnGetSearchWordpress));
+        return Partial("_ParsedAPI", null);
     }
-
 
     public async Task OnPostAsync()
     {
