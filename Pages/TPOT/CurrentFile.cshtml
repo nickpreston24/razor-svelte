@@ -1,0 +1,13 @@
+@model string[]
+@{
+    var lines = Model;
+}
+<h1>Apis parsed and ready:</h1>
+
+@foreach (var line in lines)
+{
+    <p>@line</p>
+}
+
+@* <p>Content: @Model</p> *@
+@* <b>{(await @getstuff())}</b> *@

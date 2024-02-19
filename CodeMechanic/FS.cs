@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using CodeMechanic.Diagnostics;
-using CodeMechanic.FileSystem;
-using CodeMechanic.Rest;
 using CodeMechanic.Types;
 
 namespace CodeMechanic.FileSystem;

@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
+using CodeMechanic.Embeds;
+using CodeMechanic.RazorHAT.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +22,18 @@ namespace SvelteRazor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            // services.AddSingleton<IEmbeddedResourceQuery>(new EmbeddedResourceService());
+
+            var main_assembly = Assembly.GetExecutingAssembly();
+            services.AddSingleton<IEmbeddedResourceQuery>(
+                new EmbeddedResourceService(
+                        new Assembly[]
+                        {
+                            main_assembly
+                        },
+                        debugMode: false
+                    )
+                    .CacheAllEmbeddedFileContents());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

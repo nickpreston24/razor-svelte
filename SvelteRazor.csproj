@@ -8,6 +8,7 @@
 <!--    </Target>-->
     <ItemGroup>
         <Watch Include="wwwroot/js/*.svelte" />
+        <Watch Include="**\*.rest" />
         <Watch Include="**\*.config.json" />
 <!--        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />-->
     </ItemGroup>

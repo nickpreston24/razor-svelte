@@ -6,11 +6,14 @@
     // var Upload = Model.Upload;
 }
 
-<div x-data="setup_tpot()">
+<div x-data="setup_tpot()" class="flex flex-col items-center justify-center">
+
+
     <h1>TPOT Wordpress</h1>
 
+
     <div
-        class="h-screen"
+        class="h-1/2"
         hx-target="this">
         <button
             class="btn btn-primary"
@@ -28,46 +31,69 @@
         class="h-screen"
         x-intersect:enter="shown = true">
 
-        <div x-show="shown"
-             x-transition
-             x-collapse>
 
-            <template
-                x-for="[key, value] of Object.entries(options)">
-                <div class="mb-3">
-                    @* <label class="form-control" x-text="key"></label> *@
-                    @* <span x-text="value"></span> *@
-                    <div class="label">
-                        <span x-text="value?.name" class="label-text">...</span>
-                        <span x-text="value?.alt" class="label-text-alt">alt...</span>
-                    </div>
-                    <input type="checkbox" class="form-control toggle toggle-accent" :for="key">
+        <div class="grid">
+
+
+            <div class="card w-96 bg-neutral text-neutral-content">
+                <div class="card-title">
+                    <h3>Code Options</h3>
                 </div>
-            </template>
+                <div class="card-body items-center text-center">
+                    <div x-data="{ shown: false }" x-intersect="shown = true">
+                        <div x-show="shown" x-transition>
+
+                            <div class="card-action">
+                                <h3 class="text-accent">Hey, upload some code, eh?</h3>
+                                <form disabled method="post" enctype="multipart/form-data">
+                                    <input class="file-input file-input-bordered w-full max-w-xs" type="file" asp-for="Upload"/>
+                                    <input class="btn btn-secondary" type="submit"/>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div x-show="shown"
+                 x-transition
+                 x-collapse>
+
+                <template
+                    x-for="[key, value] of Object.entries(options)">
+                    <div class="mb-3">
+                        <div class="label flex flex-col">
+                            <span x-text="value?.name" class="label-text">...</span>
+                            <span x-text="value?.alt" class="label-text-alt">alt...</span>
+                        </div>
+                        <input :value="value.value" type="checkbox" class="form-control toggle toggle-accent" :for="key">
+                    </div>
+                </template>
+
+                <button onclick="show_stats_blade = !show_stats_blade" class="btn btn-circle btn-outline btn-lg">
+                    <span class="text-sm">
+                        Stats
+                    </span>
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+
+                </button>
+
+                <button onclick="show_projects_breakdown = !show_projects_breakdown" class="btn btn-circle btn-outline btn-lg">
+                    <span class="text-sm">
+                        Projects
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
         </div>
-    </section>
 
-
-    <div x-data="{ shown: false }" x-intersect="shown = true">
-        <div x-show="shown" x-transition>
-            I'm in the viewport!
-        </div>
-    </div>
-
-
-    @* file upload *@
-
-    <section
-        class="h-screen"
-        x-data="{ shown: false }" x-intersect="shown = true">
-
-        <div x-show="shown" x-transition>
-
-            <form disabled method="post" enctype="multipart/form-data">
-                <input class="file-input file-input-bordered w-full max-w-xs" type="file" asp-for="Upload"/>
-                <input type="submit"/>
-            </form>
-        </div>
     </section>
 
 
@@ -77,10 +103,14 @@
 function setup_tpot () {
     return {
         options: [
-            {name: "foo", value: true,},
-            {name: "bar" , value: true,},
-            {name: "baz" , value: false,}
-        ]
+            {name: "Enable Diagnosis Mode", value: true,},
+            {name: "Enable File Timestamps" , value: true,},
+            {name: "Enable Code Cleanup" , value: false,},
+            {name: "Attempt Refactorings" , alt: "When enabled, Sharpify will attempt to refactor anything it can after all syntactical changes have been made", value: true,},
+            {name: "Delete Original Files" , alt: "After converting each code file, delete the original", value: false,},
+        ],
+        show_projects_breakdown: true
+        , show_stats_blade : false
     }
 }
     
