@@ -1,6 +1,6 @@
 # TRASH  Stack ♻️
 
-A low-code, framework-optional stack made of recyled parts.
+A low-code, framework-optional stack made of recycled parts.
 
 * __TailwindCSS__ - everyone knows what this is.
 * __Razor__ - HTML API with the power of xplatform C# behind it. None of that Blazor SPA complexity or JS neutering.
