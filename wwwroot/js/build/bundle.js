@@ -1027,26 +1027,23 @@
 	function create_fragment$4(ctx) {
 		let main;
 		let h1;
-		let t0;
-		let t1;
+		let t;
 
 		return {
 			c() {
 				main = element("main");
 				h1 = element("h1");
-				t0 = text(/*message*/ ctx[0]);
-				t1 = text("!");
+				t = text(/*message*/ ctx[0]);
 				attr(h1, "id", /*id*/ ctx[1]);
 				attr(h1, "class", "svelte-mmdfh9");
 			},
 			m(target, anchor) {
 				insert(target, main, anchor);
 				append(main, h1);
-				append(h1, t0);
-				append(h1, t1);
+				append(h1, t);
 			},
 			p(ctx, [dirty]) {
-				if (dirty & /*message*/ 1) set_data(t0, /*message*/ ctx[0]);
+				if (dirty & /*message*/ 1) set_data(t, /*message*/ ctx[0]);
 
 				if (dirty & /*id*/ 2) {
 					attr(h1, "id", /*id*/ ctx[1]);

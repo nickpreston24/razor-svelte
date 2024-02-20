@@ -1,4 +1,4 @@
-# TRASH  Stack ♻️
+# TRASH  Stack ♻️ 🦝
 
 For those who love Low-code and C#/.NET, here's the stack for you!
 

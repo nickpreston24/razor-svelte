@@ -2,17 +2,17 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-    var count = 5;
+    int count = 5;
 }
 
-<big-header message="Welcome to the TRASH Stack!"></big-header>
+<big-header message="Welcome to the TRASH Stack! 🦝🚀🔧"></big-header>
 
 <section>
 
     <h2>Svelte Counter (Unstyled)</h2>
     <custom-counter count={@count}></custom-counter>
     <custom-counter count={42}></custom-counter>
-    <custom-counter></custom-counter>
+    <custom-counter count=5></custom-counter>
 
 </section>
 

@@ -5,7 +5,7 @@
 </script>
 
 <main>
-    <h1 id="{id}">{message}!</h1>
+    <h1 id="{id}">{message}</h1>
 </main>
 
 <style>
