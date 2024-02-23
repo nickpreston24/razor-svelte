@@ -5,14 +5,25 @@
     int count = 5;
 }
 
+ <script>
+
+	const pkg = {
+		name: 'svelte',
+		version: 3,
+		speed: 'blazing',
+		website: 'https://svelte.dev'
+	};
+
+    </script>
+
 <big-header message="Welcome to the TRASH Stack! 🦝🚀🔧"></big-header>
 
 <section>
 
     <h2>Svelte Counter (Unstyled)</h2>
-    <custom-counter count={@count}></custom-counter>
-    <custom-counter count={42}></custom-counter>
-    <custom-counter count=5></custom-counter>
+    <custom-counter name='Step counter' x={5}></custom-counter>
+
+    <spread-test {...pkg}  />
 
 </section>
 
