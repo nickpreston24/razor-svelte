@@ -1,25 +1,42 @@
-<svelte:options tag="custom-counter"/>
+<svelte:options tag="custom-counter" />
 
 <script>
-    export let count = 0;
-    export let name = 'counter';
-
-    // console.log("count :>> ", typeof count);
-
-    function handleClick() {
-        // console.log("count :>> ", typeof count);
-        count += 1;
-    }
+  // we write export let to say that this is a property
+  // that means we can change it later!
+  export let step = 5;
+  export let x = 0;
+  export let name = "counter";
+  const addToCounter = function (amount) {
+    x += amount;
+  };
 </script>
 
-<div>
-    <span>{name}</span>
-    <button class="btn btn-accent" on:click={handleClick}>
-        Clicked {count}
-        {count === 1 ? "time" : "times"}
-    </button>
+<span>{name}</span>
+<button id="counter" on:click={() => addToCounter(step)}>{x}</button>
 
-</div>
+<!-- <button id="counter" on:click={addToCounter(5)}>{x}</button> -->
+
+<!-- 
+<script>
+  export let count;
+  export let name = "counter";
+
+  console.log("count :>> ", typeof count);
+
+  function handleClick() {
+    console.log("count :>> ", typeof count);
+    if (typeof count !== typeof number) return;
+    count += 1;
+  }
+</script>
+
+<div class="flex">
+  <span>{name}</span>
+  <button class="btn btn-accent" on:click={handleClick}>
+    Clicked {count}
+    {count === 1 ? "time" : "times"}
+  </button>
+</div> -->
 
 <!--<main>-->
 <!--    <div>-->
