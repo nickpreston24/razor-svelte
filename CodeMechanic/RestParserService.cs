@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using CodeMechanic.Advanced.Regex;
 using CodeMechanic.Diagnostics;
 using CodeMechanic.Rest;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using RestQueryOptions = CodeMechanic.Rest.RestQueryOptions;
 
