@@ -11,9 +11,7 @@ using System.Threading.Tasks;
 using CodeMechanic.Advanced.Regex;
 using CodeMechanic.Diagnostics;
 using CodeMechanic.Rest;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
-using RestQueryOptions = CodeMechanic.Rest.RestQueryOptions;
 
 namespace CodeMechanic.Curl;
 
@@ -145,16 +143,4 @@ public class RestParserService : IRestParserService
             }
         }
     }
-}
-
-public class RestfulAPIResponse
-{
-}
-
-public interface IRestParserService
-{
-    bool debug_mode { get; set; }
-    List<RestQueryOptions> GetClient(string text);
-    Task<string> GetContentAsync(string uri, string bearer_token, bool debug = false);
-    Task<string> PostPayloadAsync<T>(T payload) where T : class;
 }

@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
     <!--    <Target Name="Rollup" BeforeTargets="Build">-->
     <!--        <Exec Command="yarn build:svelte" />-->
@@ -11,7 +12,7 @@
         <Watch Include="**\*.rest"/>
         <Watch Include="**\*.config.json"/>
         <!--        match svelte js files-->
-<!--        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*"/>-->
+        <!--        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*"/>-->
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CodeMechanic.RazorHAT" Version="1.0.8"/>
@@ -20,5 +21,10 @@
         <PackageReference Include="Htmx" Version="1.7.0"/>
         <PackageReference Include="Htmx.TagHelpers" Version="1.7.0"/>
         <PackageReference Include="System.Runtime.Caching" Version="8.0.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System.Runtime.Caching">
+            <HintPath>..\..\..\..\..\.nuget\packages\system.runtime.caching\8.0.0\lib\net7.0\System.Runtime.Caching.dll</HintPath>
+        </Reference>
     </ItemGroup>
 </Project>
