@@ -8,19 +8,19 @@
     <!--        <Exec Command="yarn build:svelte" />-->
     <!--    </Target>-->
     <ItemGroup>
-        <Watch Include="wwwroot/js/*.svelte"/>
-        <Watch Include="**\*.rest"/>
-        <Watch Include="**\*.config.json"/>
+        <Watch Include="wwwroot/js/*.svelte" />
+        <Watch Include="**\*.rest" />
+        <Watch Include="**\*.config.json" />
         <!--        match svelte js files-->
         <!--        <Watch Include="**\*.js" Exclude="node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*"/>-->
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="CodeMechanic.RazorHAT" Version="1.0.8"/>
-        <PackageReference Include="CodeMechanic.Types" Version="1.0.7"/>
-        <PackageReference Include="CodeMechanic.Regex" Version="1.0.2"/>
-        <PackageReference Include="Htmx" Version="1.7.0"/>
-        <PackageReference Include="Htmx.TagHelpers" Version="1.7.0"/>
-        <PackageReference Include="System.Runtime.Caching" Version="8.0.0"/>
+        <PackageReference Include="CodeMechanic.RazorHAT" Version="1.0.8" />
+        <PackageReference Include="CodeMechanic.Types" Version="1.0.7" />
+        <PackageReference Include="CodeMechanic.Regex" Version="1.0.2" />
+        <PackageReference Include="Htmx" Version="1.7.0" />
+        <PackageReference Include="Htmx.TagHelpers" Version="1.7.0" />
+        <PackageReference Include="System.Runtime.Caching" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="System.Runtime.Caching">
