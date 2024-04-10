@@ -11,7 +11,7 @@ public class Index : PageModel
     public int all_tasks_count { get; set; }
     public int tasks_related_to_projects { get; set; }
 
-    public TodoistStats todoist_stats { get; set; } = new TodoistStats();
+    public TodoistStats todoist_stats { get; set; } = new();
 
     private readonly ITodoistService todoist;
 
@@ -24,8 +24,8 @@ public class Index : PageModel
     public async Task OnGet()
     {
         todoist_stats = await this.todoist.GetProjectsAndTasks();
-        project_total_count = todoist_stats.TodoistProjects.Count;
-        completed_tasks_count = todoist_stats.CompletedTasks.Count;
-        all_tasks_count = todoist_stats.TodoistTasks.Count;
+        // project_total_count = todoist_stats.TodoistProjects.Count;
+        // completed_tasks_count = todoist_stats.CompletedTasks.Count;
+        // all_tasks_count = todoist_stats.TodoistTasks.Count;
     }
 }

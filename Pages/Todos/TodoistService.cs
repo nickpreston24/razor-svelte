@@ -15,13 +15,12 @@ using Newtonsoft.Json;
 
 namespace CodeMechanic.Todoist;
 
-
 public class TodoistService : ITodoistService
 {
     private readonly string projectDirectory;
     private readonly string env_path;
     private readonly string api_key;
-    public bool debug_mode { get; set; } = true;
+    public bool debug_mode { get; set; } = false;
 
     private readonly MemoryCache cache;
 
@@ -33,7 +32,8 @@ public class TodoistService : ITodoistService
 
         api_key = Environment.GetEnvironmentVariable("TODOIST_API_KEY");
 
-        // set up a cahce for json:
+        Console.WriteLine("api_key :>> " + api_key);
+        // set up a cache for json:
         // Create a MemoryCache instance
         cache = MemoryCache.Default;
 
@@ -64,7 +64,10 @@ public class TodoistService : ITodoistService
         }
 
         string filename = "todoist.rest";
-        var file_text = ReadResourceFile("CodeMechanic.Todoist." + filename);
+        // var file_text = ReadResourceFile("TrashStack.Pages.Todos." + filename);
+        string cwd = Directory.GetCurrentDirectory();
+        string file_path = Path.Combine(cwd, "Pages", "Todos", filename);
+        string file_text = File.ReadAllText(file_path);
 
         // Update the curl string to always have the most updated bearer token (and not a sample, like most tutorials)
         string curl =
@@ -104,6 +107,9 @@ public class TodoistService : ITodoistService
     private TodoistStats CreateStats(string[] responses)
     {
         Console.WriteLine("responses passed in :>> " + responses.Length);
+
+        if (responses.Length == 0)
+            return new TodoistStats();
 
         var completed_tasks = responses
             .Where(json => json.Contains("completed_at"))

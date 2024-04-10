@@ -1,5 +1,6 @@
 using System.Reflection;
 using CodeMechanic.Embeds;
+using CodeMechanic.FileSystem;
 using CodeMechanic.RazorHAT.Services;
 using CodeMechanic.Todoist;
 using Microsoft.AspNetCore.Builder;
@@ -38,12 +39,14 @@ namespace TrashStack
                     .CacheAllEmbeddedFileContents());
 
 
-            services.AddScoped<ITodoistService, TodoistService>();
+            services.AddSingleton<ITodoistService, TodoistService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            DotEnv.Load();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
